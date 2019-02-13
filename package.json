@@ -4,7 +4,10 @@
   "description": "Web application that displays CPU and memory usage information",
   "main": "script.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify src/index.js > bundle.js",
+    "watch": "watchify src/index.js -o bundle.js -v",
+    "run": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +20,14 @@
   },
   "homepage": "https://github.com/magarcia5/sevaMetrics#readme",
   "dependencies": {
-    "express": "^4.16.4"
+    "browserfy": "^1.0.0",
+    "browserify": "^16.2.3",
+    "express": "^4.15.2",
+    "socket.io": "^2.2.0",
+    "socket.io-client": "^2.2.0",
+    "uws": "^10.148.1"
+  },
+  "devDependencies": {
+    "watchify": "^3.11.0"
   }
 }
