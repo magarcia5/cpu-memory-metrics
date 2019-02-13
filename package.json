@@ -1,0 +1,22 @@
+{
+  "name": "seva-metrics",
+  "version": "1.0.0",
+  "description": "Web application that displays CPU and memory usage information",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/magarcia5/sevaMetrics.git"
+  },
+  "author": "Mel Alrahi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/magarcia5/sevaMetrics/issues"
+  },
+  "homepage": "https://github.com/magarcia5/sevaMetrics#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
