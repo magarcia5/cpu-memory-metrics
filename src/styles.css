@@ -1,34 +1,6 @@
-body {
-  font-family: "Palatino Linotype", "Book Antiqua", Palantino serif;
-}
-
-.header {
-  text-align: center;
-}
-
-#aggregate-info {
-  margin-bottom: 25px;
+.cpu-container, .mem-container {
+  height: 40%;
   width: 95%;
-  height: fit-content;
   margin: auto;
-  margin-bottom: 20px;
-}
-
-.proc-container {
-  overflow: scroll;
-  width: 95%;
-  height: 500px;
-  margin:auto;
-  border: 2px solid gray;
-  margin-bottom: 30px;
-}
-
-td, th {
-  border: 1px solid #dddddd;
-  text-align: left;
-  padding: 8px;
-}
-
-tr:nth-child(even) {
-  background-color: #dddddd;
+  margin-bottom: 50px;
 }

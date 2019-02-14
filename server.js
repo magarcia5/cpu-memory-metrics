@@ -26,20 +26,31 @@ http.listen(3000, () => {
   console.log('listening on *:3000');
 });
 
-function updateUI() {
+let cpus = [];
+let mems = [];
 
-  exec('top -o cpu -l 1', (err, stdout, stderr) => {
+function updateUI() {
+  const cmd = 'ps -A -o %cpu,%mem | awk \'{ cpu += $1; mem += $2} END {print cpu , mem}\'';
+
+  exec(cmd, (err, stdout, stderr) => {
     if (err) {
       // in the event of an error, we'll just ignore it and try again on the next interval
       // if the error persists, we could possibly close the connection
       return;
     }
 
-    const output = stdout.split('\n');
+    const cpu = stdout.split(' ')[0];
+    if(cpus.length === 20) {
+      cpus.shift();
+    }
+    cpus.push({ x: new Date, y: cpu });
 
-    const aggregate = output.slice(0, NUM_AGGREGATE_LINES);
-    const procs = output.slice(NUM_AGGREGATE_LINES, output.length);
+    const memory = stdout.split(' ')[1];
+    if(mems.length === 20) {
+      mems.shift();
+    }
+    mems.push({ x: new Date(), y: memory});
   
-    io.emit('update', aggregate, procs);
+    io.emit('update', cpus, mems);
   });
 }
