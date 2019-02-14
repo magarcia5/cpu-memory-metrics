@@ -28,7 +28,7 @@ http.listen(3000, () => {
 
 function updateUI() {
 
-  exec('top -o cpu -l 1 -n 2', (err, stdout, stderr) => {
+  exec('top -o cpu -l 1', (err, stdout, stderr) => {
     if (err) {
       // in the event of an error, we'll just ignore it and try again on the next interval
       // if the error persists, we could possibly close the connection
@@ -36,8 +36,10 @@ function updateUI() {
     }
 
     const output = stdout.split('\n');
+
     const aggregate = output.slice(0, NUM_AGGREGATE_LINES);
+    const procs = output.slice(NUM_AGGREGATE_LINES, output.length);
   
-    io.emit('update', aggregate, '');
+    io.emit('update', aggregate, procs);
   });
 }
