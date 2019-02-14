@@ -1,21 +1,23 @@
-var express = require('express');
-var app = express();
-var http = require('http').Server(app);
+const express = require('express');
+const app = express();
+const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const { exec } = require('child_process');
 
-// number of lines in `top` output that contain aggregate data
-const NUM_AGGREGATE_LINES = 11;
+const INTERVAL = 2000;
+const MAX_DATA_POINTS = 20;
 
+// set public directory
 app.use(express.static(__dirname));
 
+// serve page
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
+// send information to the client on the specified interval
 io.on('connection', (socket) => {
-  console.log('a user connected');
-  const updateInterval = setInterval(updateUI, 3000);
+  const updateInterval = setInterval(updateClient, INTERVAL, socket);
 
   socket.on('disconnect', () => {
     clearInterval(updateInterval);
@@ -23,34 +25,45 @@ io.on('connection', (socket) => {
 });
 
 http.listen(3000, () => {
-  console.log('listening on *:3000');
+  console.log('Visit the UI at http://localhost:3000');
 });
 
 let cpus = [];
 let mems = [];
 
-function updateUI() {
+/**
+ * Execute shell command to retrieve cpu and memory data and
+ * send values to the client
+ *
+ * @param {Object} socket the current open socket
+ */
+function updateClient(socket) {
+  // gather cpu and memory values for all processes and add them up
   const cmd = 'ps -A -o %cpu,%mem | awk \'{ cpu += $1; mem += $2} END {print cpu , mem}\'';
 
-  exec(cmd, (err, stdout, stderr) => {
-    if (err) {
-      // in the event of an error, we'll just ignore it and try again on the next interval
-      // if the error persists, we could possibly close the connection
-      return;
-    }
+  exec(cmd, (err, stdout) => {
+    // set value to null if the command failed with error, otherwise extract the value
+    const cpuVal = err ? null : stdout.split(' ')[0];
+    const memVal = err ? null : stdout.split(' ')[1];
 
-    const cpu = stdout.split(' ')[0];
-    if(cpus.length === 20) {
-      cpus.shift();
-    }
-    cpus.push({ x: new Date, y: cpu });
-
-    const memory = stdout.split(' ')[1];
-    if(mems.length === 20) {
-      mems.shift();
-    }
-    mems.push({ x: new Date(), y: memory});
+    updateArray(cpuVal, cpus);
+    updateArray(memVal, mems);
   
-    io.emit('update', cpus, mems);
+    socket.emit('update', cpus, mems);
   });
+}
+
+/**
+ * Update array with latest value and remove oldest if the array has
+ * reached the max length
+ *
+ * @param {Int} number to add to the array
+ * @param {Array} array array to add value to
+ */
+function updateArray(value, array) {
+  if(array.length === MAX_DATA_POINTS) {
+    // remove the oldest value
+    array.shift();
+  }
+  array.push({ x: new Date(), y: value});
 }

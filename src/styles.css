@@ -1,3 +1,7 @@
+.header {
+  text-align: center;
+}
+
 .cpu-container, .mem-container {
   height: 40%;
   width: 95%;
